@@ -81,8 +81,25 @@ def save_json(path: Path, obj: Any) -> None:
     path.write_text(json.dumps(obj, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def format_dynamic_headline(days_left: int, tier: str) -> str | None:
+    if tier == "ok":
+        return None
+    if days_left < 0:
+        return f"หมดอายุมาแล้ว {abs(days_left):,} วัน"
+    if days_left == 0:
+        return "เอกสารหมดอายุวันนี้"
+    months = days_left // 30
+    rem_days = days_left % 30
+    if months >= 1 and rem_days > 0:
+        return f"อีก {months} เดือน {rem_days} วันจะหมดอายุ"
+    if months >= 1:
+        return f"อีก {months} เดือนจะหมดอายุ"
+    return f"อีก {days_left:,} วันจะหมดอายุ"
+
+
 def build_due_alerts(personnel: list[dict[str, Any]], sent_log: dict[str, Any], today: dt.date) -> list[dict[str, Any]]:
     alerts: list[dict[str, Any]] = []
+    month_key = today.strftime("%Y-%m")
     doc_fields = [
         ("licenseExpiry", "licenseExpiryRaw", "ใบประกอบวิชาชีพ"),
         ("cardExpiry", "cardExpiryRaw", "บัตรประจำตัวผู้ปฏิบัติการ"),
@@ -99,7 +116,10 @@ def build_due_alerts(personnel: list[dict[str, Any]], sent_log: dict[str, Any], 
             if not tier:
                 continue
 
-            log_key = f"p{p['id']}_{iso_key}_{iso_val}_{tier}"
+            # Monthly recurring deduplication:
+            # Sends once per calendar month (YYYY-MM) while within <= 9 months (or expired)
+            # until the expiry date is updated in personnel.json.
+            log_key = f"p{p['id']}_{iso_key}_{iso_val}_{month_key}"
             if log_key in sent_log:
                 continue
 
@@ -113,6 +133,7 @@ def build_due_alerts(personnel: list[dict[str, Any]], sent_log: dict[str, Any], 
                     "expiryRaw": p.get(raw_key),
                     "daysLeft": days_left,
                     "daysText": format_remaining_thai(days_left),
+                    "headline": format_dynamic_headline(days_left, tier),
                 }
             )
     return alerts
@@ -153,6 +174,7 @@ def build_test_alerts(
                 "expiryRaw": raw_val,
                 "daysLeft": days_left,
                 "daysText": format_remaining_thai(days_left),
+                "headline": format_dynamic_headline(days_left, tier),
             }
         ]
     if mode == "test_red":
@@ -248,6 +270,7 @@ def phase_prepare(mode: str, dry_run: bool, person_id: int | None = None) -> int
             expiry_raw=item["expiryRaw"],
             days_remaining_text=item["daysText"],
             output_path=out_path,
+            headline_override=item.get("headline"),
         )
         print(f"[prepare] Rendered {out_path.name} ({out_path.stat().st_size:,} bytes)")
         queue.append(

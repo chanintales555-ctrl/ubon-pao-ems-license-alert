@@ -70,9 +70,9 @@ THEMES = {
         "border": "#9DCDB9",
         "badge_bg": "#176B4B",
         "badge_text": "#F8FCF9",
-        "badge_label": "แจ้งเตือนรอบที่ 1 · ล่วงหน้า 9 เดือน",
+        "badge_label": "บัตรเขียว · แจ้งเตือนประจำเดือน (ระยะ 7–9 เดือน)",
         "headline": "อีก 9 เดือนจะหมดอายุ",
-        "subline": "ระดับปกติ — แจ้งเตือนล่วงหน้าเพื่อวางแผนการต่ออายุเอกสาร",
+        "subline": "ระดับปกติ — แจ้งเตือนประจำเดือนล่วงหน้าเพื่อวางแผนต่ออายุเอกสาร",
         "icon_svg": (
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
             'stroke-linecap="square" stroke-linejoin="miter">'
@@ -88,9 +88,9 @@ THEMES = {
         "border": "#E5C175",
         "badge_bg": "#C98200",
         "badge_text": "#FFFDF8",
-        "badge_label": "แจ้งเตือนรอบที่ 2 · ล่วงหน้า 6 เดือน",
+        "badge_label": "บัตรเหลือง · แจ้งเตือนประจำเดือน (ระยะ 4–6 เดือน)",
         "headline": "อีก 6 เดือนจะหมดอายุ",
-        "subline": "ระดับเฝ้าระวัง — กรุณาเริ่มรวบรวมและเตรียมเอกสารเพื่อต่ออายุ",
+        "subline": "ระดับเฝ้าระวัง — แจ้งเตือนทุกเดือน กรุณาเริ่มรวบรวมเอกสารต่ออายุ",
         "icon_svg": (
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
             'stroke-linecap="square" stroke-linejoin="miter">'
@@ -106,9 +106,9 @@ THEMES = {
         "border": "#E2A2A7",
         "badge_bg": "#B01E28",
         "badge_text": "#FFF9F9",
-        "badge_label": "แจ้งเตือนเร่งด่วน · ล่วงหน้า 3 เดือน",
+        "badge_label": "บัตรแดง · แจ้งเตือนด่วนประจำเดือน (ไม่เกิน 3 เดือน)",
         "headline": "อีก 3 เดือนจะหมดอายุ",
-        "subline": "ระดับเร่งด่วน — ใกล้ครบกำหนด กรุณาดำเนินการต่ออายุโดยทันที",
+        "subline": "ระดับเร่งด่วน — แจ้งเตือนทุกเดือน กรุณาดำเนินการต่ออายุโดยทันที",
         "icon_svg": (
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
             'stroke-linecap="square" stroke-linejoin="miter">'
@@ -125,7 +125,7 @@ THEMES = {
         "border": "#D98C91",
         "badge_bg": "#7D1018",
         "badge_text": "#FFF9F9",
-        "badge_label": "แจ้งเตือนด่วนที่สุด · หมดอายุแล้ว",
+        "badge_label": "บัตรแดงเข้ม · แจ้งเตือนประจำเดือน (หมดอายุแล้ว)",
         "headline": "เอกสารหมดอายุแล้ว",
         "subline": "เลยกำหนดวันหมดอายุ — กรุณาตรวจสอบและดำเนินการต่ออายุทันที",
         "icon_svg": (
@@ -180,8 +180,10 @@ def build_postcard_html(
     expiry_iso: str,
     expiry_raw: str | None,
     days_remaining_text: str,
+    headline_override: str | None = None,
 ) -> str:
     t = THEMES[tier]
+    headline_text = html.escape(headline_override) if headline_override else t["headline"]
     emblem_uri = load_data_uri(EMBLEM_PATH, "image/png")
 
     font_regular = (FONTS_DIR / "IBMPlexSansThai-Regular.ttf").as_uri()
@@ -535,7 +537,7 @@ def build_postcard_html(
       <section class="alert-box">
         <div class="alert-icon">{t['icon_svg']}</div>
         <div>
-          <div class="alert-headline">{t['headline']}</div>
+          <div class="alert-headline">{headline_text}</div>
           <div class="alert-subline">{t['subline']}</div>
         </div>
       </section>
@@ -592,6 +594,7 @@ def render_postcard_png(
     expiry_raw: str | None,
     days_remaining_text: str,
     output_path: Path,
+    headline_override: str | None = None,
 ) -> Path:
     html_str = build_postcard_html(
         person=person,
@@ -600,6 +603,7 @@ def render_postcard_png(
         expiry_iso=expiry_iso,
         expiry_raw=expiry_raw,
         days_remaining_text=days_remaining_text,
+        headline_override=headline_override,
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     browser_bin = find_browser_executable()
