@@ -1,0 +1,76 @@
+name: Daily EMS License Postcard Alert
+
+on:
+  schedule:
+    # รันอัตโนมัติทุกวัน เวลา 08:00 น. ตามเวลาประเทศไทย (UTC+7 = 01:00 UTC)
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "โหมดการทำงาน"
+        required: true
+        default: "check"
+        type: choice
+        options:
+          - check
+          - test_red
+          - test_all_colors
+          - dry_run
+
+permissions:
+  contents: write
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    env:
+      MODE: ${{ github.event.inputs.mode || 'check' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Phase 1 — Check expiration dates & render PNG postcards
+        run: |
+          python scripts/check_and_alert.py --prepare --mode "$MODE"
+
+      - name: Publish rendered postcard PNGs so LINE Messaging API can fetch HTTPS URLs
+        id: publish_cards
+        run: |
+          if [ -f cards/_pending_queue.json ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add cards/*.png
+            if ! git diff --cached --quiet; then
+              git commit -m "chore(cards): render alert postcards [skip ci]"
+              git push origin HEAD:main
+            fi
+            echo "has_pending=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_pending=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Phase 2 — Send postcard images to LINE Group
+        if: steps.publish_cards.outputs.has_pending == 'true'
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_GROUP_ID: ${{ secrets.LINE_GROUP_ID }}
+        run: |
+          python scripts/check_and_alert.py --send --repo "${{ github.repository }}" --branch main
+
+      - name: Commit updated sent_log.json (deduplication)
+        if: steps.publish_cards.outputs.has_pending == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/sent_log.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(log): record sent alerts [skip ci]"
+            git push origin HEAD:main
+          fi

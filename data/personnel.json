@@ -1,0 +1,166 @@
+{
+  "organization": "องค์การบริหารส่วนจังหวัดอุบลราชธานี",
+  "unit": "หน่วยปฏิบัติการแพทย์กู้ชีพระดับสูง (EMS)",
+  "personnel": [
+    {
+      "id": 1,
+      "name": "น.ส.สราลี บุตรวงศ์",
+      "qualification": "ENP",
+      "licenseExpiry": "2030-08-06",
+      "licenseExpiryRaw": "๖ ส.ค. ๗๓",
+      "cardExpiry": null,
+      "cardExpiryRaw": null,
+      "role": "หัวหน้าชุด"
+    },
+    {
+      "id": 2,
+      "name": "นางนิตยา พันธ์สุวรรณ",
+      "qualification": "ENP",
+      "licenseExpiry": "2028-03-29",
+      "licenseExpiryRaw": "๒๙ มี.ค. ๗๑",
+      "cardExpiry": null,
+      "cardExpiryRaw": null,
+      "role": "หัวหน้าชุด"
+    },
+    {
+      "id": 3,
+      "name": "น.ส.พัชรี พลกันยา",
+      "qualification": "PMD",
+      "licenseExpiry": "2027-07-04",
+      "licenseExpiryRaw": "๔ ก.ค. ๗๐",
+      "cardExpiry": null,
+      "cardExpiryRaw": null,
+      "role": "หัวหน้าชุด"
+    },
+    {
+      "id": 4,
+      "name": "นายก้องกฤษฎากรณ์ ชนแดง",
+      "qualification": "ENP",
+      "licenseExpiry": "2030-11-29",
+      "licenseExpiryRaw": "๒๙ พ.ย. ๗๓",
+      "cardExpiry": null,
+      "cardExpiryRaw": null,
+      "role": "ผช.หัวหน้าชุด"
+    },
+    {
+      "id": 5,
+      "name": "น.ส.เกศราภรณ์ คลังทอง",
+      "qualification": "พว.",
+      "licenseExpiry": "2029-03-17",
+      "licenseExpiryRaw": "๑๗ มี.ค. ๗๒",
+      "cardExpiry": null,
+      "cardExpiryRaw": null,
+      "role": "ผช.หัวหน้าชุด"
+    },
+    {
+      "id": 6,
+      "name": "นายกิตติศักดิ์ ศรีดาคุณ",
+      "qualification": "พว.",
+      "licenseExpiry": "2031-03-28",
+      "licenseExpiryRaw": "๒๘ มี.ค. ๗๔",
+      "cardExpiry": null,
+      "cardExpiryRaw": null,
+      "role": "ผช.หัวหน้าชุด"
+    },
+    {
+      "id": 7,
+      "name": "นายกรกฎ วิไลเกษม",
+      "qualification": "พว.",
+      "licenseExpiry": "2026-10-17",
+      "licenseExpiryRaw": "๑๗ ต.ค. ๖๙",
+      "cardExpiry": null,
+      "cardExpiryRaw": null,
+      "role": "ผช.หัวหน้าชุด"
+    },
+    {
+      "id": 8,
+      "name": "นายสุรชาติ พันธุ์คำ",
+      "qualification": "พฉพพ",
+      "licenseExpiry": null,
+      "licenseExpiryRaw": null,
+      "cardExpiry": "2029-01-10",
+      "cardExpiryRaw": "๑๐ ม.ค. ๗๒",
+      "role": "พขร"
+    },
+    {
+      "id": 9,
+      "name": "นายธนวัฒน์ ละดาดก",
+      "qualification": "EMR",
+      "licenseExpiry": null,
+      "licenseExpiryRaw": null,
+      "cardExpiry": null,
+      "cardExpiryRaw": null,
+      "role": "พขร"
+    },
+    {
+      "id": 10,
+      "name": "นายกรกช เดชพล",
+      "qualification": "EMT",
+      "licenseExpiry": null,
+      "licenseExpiryRaw": null,
+      "cardExpiry": "2029-01-10",
+      "cardExpiryRaw": "๑๐ ม.ค. ๗๒",
+      "role": "พขร"
+    },
+    {
+      "id": 11,
+      "name": "นายธวัชชัย ละดาดก",
+      "qualification": "EMT",
+      "licenseExpiry": null,
+      "licenseExpiryRaw": null,
+      "cardExpiry": "2029-01-10",
+      "cardExpiryRaw": "๑๐ ม.ค. ๗๒",
+      "role": "พขร"
+    },
+    {
+      "id": 12,
+      "name": "นายธนิต แซ่ลอ",
+      "qualification": "EMT",
+      "licenseExpiry": null,
+      "licenseExpiryRaw": null,
+      "cardExpiry": "2027-02-12",
+      "cardExpiryRaw": "๑๒ ก.พ. ๗๐",
+      "role": "พขร"
+    },
+    {
+      "id": 13,
+      "name": "นายวิศยุธ โม่สันทด",
+      "qualification": "EMR",
+      "licenseExpiry": null,
+      "licenseExpiryRaw": null,
+      "cardExpiry": "2027-02-12",
+      "cardExpiryRaw": "๑๒ ก.พ. ๗๐",
+      "role": "พขร"
+    },
+    {
+      "id": 14,
+      "name": "น.ส.เจนจิรา ลาธุลี",
+      "qualification": "EMR",
+      "licenseExpiry": null,
+      "licenseExpiryRaw": null,
+      "cardExpiry": null,
+      "cardExpiryRaw": null,
+      "role": "บุคลากรสนับสนุน"
+    },
+    {
+      "id": 15,
+      "name": "นายทรัพย์ราชัน แจ่มจันทร์",
+      "qualification": "EMR",
+      "licenseExpiry": null,
+      "licenseExpiryRaw": null,
+      "cardExpiry": "2029-01-10",
+      "cardExpiryRaw": "๑๐ ม.ค. ๗๒",
+      "role": "บุคลากรสนับสนุน"
+    },
+    {
+      "id": 16,
+      "name": "นายประดิษฐ์ โอภาพ",
+      "qualification": "-",
+      "licenseExpiry": null,
+      "licenseExpiryRaw": null,
+      "cardExpiry": null,
+      "cardExpiryRaw": null,
+      "role": "บุคลากรสนับสนุน"
+    }
+  ]
+}

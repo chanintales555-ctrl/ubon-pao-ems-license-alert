@@ -1,0 +1,13 @@
+# Local-only / sensitive files (never push to public GitHub)
+*.pdf
+.env
+.env.*
+__pycache__/
+*.pyc
+
+# Temporary queue & local previews
+cards/_pending_queue.json
+samples/
+gas/
+preview.html
+deploy-gas.ps1
