@@ -45,6 +45,24 @@ THAI_MONTHS_FULL = [
 ]
 
 THEMES = {
+    "ok": {
+        "band": "#176B4B",
+        "accent": "#135D41",
+        "tint": "#EDF7F2",
+        "border": "#9DCDB9",
+        "badge_bg": "#176B4B",
+        "badge_text": "#F8FCF9",
+        "badge_label": "ทดสอบระบบแจ้งเตือน · สถานะปกติ",
+        "headline": "เอกสารใช้งานได้ปกติ",
+        "subline": "ยังไม่ถึงรอบแจ้งเตือนล่วงหน้า (9 / 6 / 3 เดือน) — ส่งเพื่อทดสอบระบบ",
+        "icon_svg": (
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
+            'stroke-linecap="square" stroke-linejoin="miter">'
+            '<circle cx="12" cy="12" r="9"/>'
+            '<polyline points="8.5 12.5 11 15 15.5 9.5"/>'
+            "</svg>"
+        ),
+    },
     "9m": {
         "band": "#176B4B",
         "accent": "#135D41",

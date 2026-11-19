@@ -56,13 +56,18 @@ def format_remaining_thai(days_left: int) -> str:
         return f"หมดอายุมาแล้ว {overdue:,} วัน"
     if days_left == 0:
         return "หมดอายุวันนี้"
-    months = days_left // 30
-    rem_days = days_left % 30
-    if months > 0 and rem_days > 0:
-        return f"เหลือเวลาอีก {months} เดือน {rem_days} วัน ({days_left:,} วัน)"
+    years = days_left // 365
+    rem_after_years = days_left % 365
+    months = rem_after_years // 30
+    rem_days = rem_after_years % 30
+    parts: list[str] = []
+    if years > 0:
+        parts.append(f"{years} ปี")
     if months > 0:
-        return f"เหลือเวลาอีก {months} เดือน ({days_left:,} วัน)"
-    return f"เหลือเวลาอีก {days_left:,} วัน"
+        parts.append(f"{months} เดือน")
+    if years == 0 and rem_days > 0:
+        parts.append(f"{rem_days} วัน")
+    return f"เหลือเวลาอีก {' '.join(parts)} ({days_left:,} วัน)"
 
 
 def load_json(path: Path, default: Any) -> Any:
@@ -113,8 +118,43 @@ def build_due_alerts(personnel: list[dict[str, Any]], sent_log: dict[str, Any], 
     return alerts
 
 
-def build_test_alerts(personnel: list[dict[str, Any]], mode: str) -> list[dict[str, Any]]:
+def build_test_alerts(
+    personnel: list[dict[str, Any]],
+    mode: str,
+    today: dt.date,
+    person_id: int | None = None,
+) -> list[dict[str, Any]]:
     by_id = {p["id"]: p for p in personnel}
+    if mode == "test_person":
+        target_id = person_id if person_id is not None else 2
+        p = by_id.get(target_id)
+        if not p:
+            raise RuntimeError(f"Person ID {target_id} not found in data/personnel.json")
+        if p.get("licenseExpiry"):
+            doc_type = "ใบประกอบวิชาชีพ"
+            iso_val = p["licenseExpiry"]
+            raw_val = p.get("licenseExpiryRaw")
+        elif p.get("cardExpiry"):
+            doc_type = "บัตรประจำตัวผู้ปฏิบัติการ"
+            iso_val = p["cardExpiry"]
+            raw_val = p.get("cardExpiryRaw")
+        else:
+            raise RuntimeError(f"Person ID {target_id} ({p['name']}) has no expiry date recorded")
+        exp_date = dt.date.fromisoformat(iso_val)
+        days_left = (exp_date - today).days
+        tier = classify_tier(days_left) or "ok"
+        return [
+            {
+                "logKey": None,
+                "person": p,
+                "tier": tier,
+                "docType": doc_type,
+                "expiryIso": iso_val,
+                "expiryRaw": raw_val,
+                "daysLeft": days_left,
+                "daysText": format_remaining_thai(days_left),
+            }
+        ]
     if mode == "test_red":
         p = by_id.get(12, personnel[0])
         return [
@@ -168,14 +208,14 @@ def build_test_alerts(personnel: list[dict[str, Any]], mode: str) -> list[dict[s
     return []
 
 
-def phase_prepare(mode: str, dry_run: bool) -> int:
+def phase_prepare(mode: str, dry_run: bool, person_id: int | None = None) -> int:
     data = load_json(PERSONNEL_PATH, {"personnel": []})
     personnel = data.get("personnel", [])
     sent_log = load_json(SENT_LOG_PATH, {})
     today = today_bangkok()
 
-    if mode in ("test_red", "test_all_colors"):
-        alerts = build_test_alerts(personnel, mode)
+    if mode in ("test_red", "test_all_colors", "test_person"):
+        alerts = build_test_alerts(personnel, mode, today, person_id=person_id)
     else:
         alerts = build_due_alerts(personnel, sent_log, today)
 
@@ -328,16 +368,17 @@ def main() -> int:
     parser.add_argument("--send", action="store_true", help="Phase 2: push rendered PNG postcards to LINE group")
     parser.add_argument(
         "--mode",
-        choices=["check", "test_red", "test_all_colors", "dry_run"],
+        choices=["check", "test_red", "test_all_colors", "test_person", "dry_run"],
         default="check",
         help="Execution mode",
     )
+    parser.add_argument("--person-id", type=int, default=None, help="Person ID for test_person mode")
     parser.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY", "chanintales555-ctrl/ubon-pao-ems-license-alert"))
     parser.add_argument("--branch", default="main")
     args = parser.parse_args()
 
     if args.prepare:
-        return phase_prepare(mode=args.mode, dry_run=(args.mode == "dry_run"))
+        return phase_prepare(mode=args.mode, dry_run=(args.mode == "dry_run"), person_id=args.person_id)
     if args.send:
         return phase_send(repo=args.repo, branch=args.branch)
 
